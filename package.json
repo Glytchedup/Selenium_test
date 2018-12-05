@@ -1,0 +1,31 @@
+{
+  "name": "selenium_test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "selenium.js",
+  "dependencies": {
+    "geckodriver": "^1.14.1",
+    "mocha": "^5.2.0",
+    "async": "^2.0.0",
+    "faker": "^4.1.0",
+    "fast-csv": "^2.0.1",
+    "mocha-junit-reporter": "^1.17.0",
+    "moment": "^2.22.2",
+    "selenium-webdriver": "^3.6.0",
+    "sqlite3": "^4.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Glytchedup/Selenium_test.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Glytchedup/Selenium_test/issues"
+  },
+  "homepage": "https://github.com/Glytchedup/Selenium_test#readme"
+}
