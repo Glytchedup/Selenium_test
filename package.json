@@ -4,13 +4,16 @@
   "description": "",
   "main": "selenium.js",
   "dependencies": {
-    "geckodriver": "^1.14.1",
-    "mocha": "^5.2.0",
     "async": "^2.0.0",
+    "chai": "^4.2.0",
     "faker": "^4.1.0",
     "fast-csv": "^2.0.1",
+    "fs": "0.0.1-security",
+    "geckodriver": "^1.14.1",
+    "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "moment": "^2.22.2",
+    "path": "^0.12.7",
     "selenium-webdriver": "^3.6.0",
     "sqlite3": "^4.0.4"
   },
