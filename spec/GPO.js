@@ -2,6 +2,7 @@
 var eid = process.env.EID;
 var password = process.env.PASSWORD;
 var url = process.env.URL;
+var gpourl = process.env.GPOURL;
 
 //Webdriver setup
 var assert = require("assert");
@@ -30,10 +31,10 @@ var options = new firefox.Options().setProfile(profile);
 var driver = new webdriver.Builder();
 
 //Array of codes
-var marsha = ["SJCCA", "SLCSR"];
+var marsha = ["SJCCA", "FATCH"];
 
 //Build Webdriver with Firefox profile setup
-test.describe("Pull OYV2 Extracts", function() {
+test.describe("GPO Clicker", function() {
   test.before(function() {
     this.timeout(timeOut);
     driver = new webdriver.Builder()
@@ -54,9 +55,9 @@ test.describe("Pull OYV2 Extracts", function() {
     driver.findElement(webdriver.By.css("button.btn.btn-block")).click();
   });
 
-  //Loop to pull all extracts
+  //Shop Loop 
   marsha.forEach(s => {
-    test.describe("Pull Extract for " + s, function() {
+    test.describe("GPO Shop for " + s, function() {
       test.before(function() {
         this.timeout(timeOut);
         driver
@@ -65,28 +66,29 @@ test.describe("Pull OYV2 Extracts", function() {
           .setSize(1280, 720);
       });
 
-      test.it("Pull Extract", function(done, err) {
+      test.it("GPO interaction", function(done, err) {
         console.log(s);
         this.timeout(timeOut);
-        driver.get(url);
-        driver.findElement(By.id("propertyCodeText")).sendKeys(s);
-        driver.findElement(By.css("b > a")).click();
-        driver.sleep(5000).then(function() {
-          return driver.wait(
-            until.elementLocated(By.id("dijit__TemplatedMixin_0")),
-            20000
-          );
-        });
-        driver.findElement(By.id("dijit__TemplatedMixin_0")).click();
-        driver.findElement(By.id("dijit__TemplatedMixin_0")).click();
+        driver.get(gpourl);
+
+        //Above Property Radio ---- XXXXXXXXXXXXXX
         driver.sleep(10000).then(function() {
           return driver.wait(
-            until.elementLocated(By.css("span.icon.settings-button")),
+            until.elementLocated(By.id("uniqName_1_0-mode-above-property")).click(),
             20000
           );
         });
-        driver.findElement(By.css("span.icon.settings-button")).click();
-        driver.findElement(By.css("#dijit_MenuItem_3_text")).click();
+        // driver.findElement(By.css("uniqName_1_0-mode-above-property")).click();
+        //Sign In
+        driver.findElement(By.css(".submit > a")).click();
+        //PRICE link
+        driver.findElement(By.css("div.heading > a")).click();
+        //TEST PRICE Link
+        driver.findElement(By.css("div.marriottSubMenuBar > a.marriottMenuItem")).click();
+        //LOS pull down
+        driver.findElement(By.id("div.marriottSubMenuBar > a.marriottMenuItem")).click();
+        //NEW button
+        driver.findElement(By.css("#dijit_form_Form_1 > button")).click();
 
         driver.sleep(45000).then(function test() {
           const testFolder = myDownloadFolder;

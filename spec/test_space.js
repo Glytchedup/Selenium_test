@@ -1,6 +1,9 @@
-var eid = process.env.eid;
-var password = process.env.password;
-var homelink = process.env.homelink;
+//credentials in app-env
+var eid = process.env.EID;
+var password = process.env.PASSWORD;
+var url = process.env.URL;
+
+//Webdriver setup
 var assert = require("assert");
 var webdriver = require("selenium-webdriver"),
   By = webdriver.By,
@@ -20,14 +23,16 @@ profile.setPreference(
   "browser.helperApps.neverAsk.saveToDisk",
   "application/vnd.ms-excel"
 );
+
 // disable Firefox's built-in PDF viewer
 profile.setPreference("pdfjs.disabled", true);
 var options = new firefox.Options().setProfile(profile);
 var driver = new webdriver.Builder();
 
-var marsha = ["FATCH", "FATRI", "SJCCA", "SLCSR", "SFOSB"];
-// var marsha = ["SJCCA"];
+//Array of codes
+var marsha = ["SJCCA", "SLCSR"];
 
+//Build Webdriver with Firefox profile setup
 test.describe("Pull OYV2 Extracts", function() {
   test.before(function() {
     this.timeout(timeOut);
@@ -37,21 +42,19 @@ test.describe("Pull OYV2 Extracts", function() {
       .build();
   });
 
+  //Quit after last case finishes
   after(async () => driver.quit());
-  
-  // test.after("test complete", function() {
-  //   driver.close();
-  // });
 
+  //Login
   test.it("login successful", function() {
     this.timeout(timeOut);
-    //Login to OY
-    driver.get(homelink);
+    driver.get(url);
     driver.findElement(webdriver.By.name("username")).sendKeys(eid);
     driver.findElement(webdriver.By.name("password")).sendKeys(password);
     driver.findElement(webdriver.By.css("button.btn.btn-block")).click();
   });
 
+  //Loop to pull all extracts
   marsha.forEach(s => {
     test.describe("Pull Extract for " + s, function() {
       test.before(function() {
@@ -65,9 +68,7 @@ test.describe("Pull OYV2 Extracts", function() {
       test.it("Pull Extract", function(done, err) {
         console.log(s);
         this.timeout(timeOut);
-        driver.get(
-          homelink
-        );
+        driver.get(url);
         driver.findElement(By.id("propertyCodeText")).sendKeys(s);
         driver.findElement(By.css("b > a")).click();
         driver.sleep(5000).then(function() {
@@ -91,12 +92,13 @@ test.describe("Pull OYV2 Extracts", function() {
           const testFolder = myDownloadFolder;
           const fs = require("fs");
 
+          //Checking for file in app downloads folder
           fs.readdir(testFolder, (err, files) => {
             files.forEach(file => {
               if (file.indexOf(s) > -1) {
                 console.log(file + " was successfully pulled");
                 return done();
-                
+
                 // use those file and return it as a REST API
               } else if (file.indexOf(s) >= 0) {
                 console.log("Going into Overtime");
@@ -106,7 +108,9 @@ test.describe("Pull OYV2 Extracts", function() {
                   fs.readdir(testFolder, (err, files) => {
                     files.forEach(file => {
                       if (file.indexOf(s) > -1) {
-                        console.log(file + " successfully pulled after a delay");
+                        console.log(
+                          file + " successfully pulled after a delay"
+                        );
                         return done();
                         // use those file and return it as a REST API
                       } else if (file.indexOf(s) >= 0) {
