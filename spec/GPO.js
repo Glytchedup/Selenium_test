@@ -73,8 +73,8 @@ test.describe("GPO Clicker", function() {
 
         //Above Property Radio ---- XXXXXXXXXXXXXX
         driver.sleep(10000).then(function() {
-          return driver.wait(
-            until.elementLocated(By.id("uniqName_1_0-mode-above-property")).click(),
+        return driver.wait(
+            until.elementLocated(By.css(".accessLevel > label:nth-child(5)")).click(),
             20000
           );
         });
