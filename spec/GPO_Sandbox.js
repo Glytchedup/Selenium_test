@@ -1,3 +1,6 @@
+
+
+
 //credentials in app-env
 var eid = process.env.EID;
 var password = process.env.PASSWORD;
@@ -7,8 +10,8 @@ var gpourl = process.env.GPOURL;
 //Webdriver setup
 var assert = require("assert");
 var webdriver = require("selenium-webdriver"),
-  By = webdriver.By,
-  until = webdriver.until;
+           By = webdriver.By,
+            until = webdriver.until;
 var test = require("selenium-webdriver/testing");
 const timeOut = 90000;
 var extract;
@@ -23,12 +26,12 @@ profile.setPreference("browser.download.dir", myDownloadFolder);
 profile.setPreference(
   "browser.helperApps.neverAsk.saveToDisk",
   "application/vnd.ms-excel"
-);
-
-// disable Firefox's built-in PDF viewer
-profile.setPreference("pdfjs.disabled", true);
-var options = new firefox.Options().setProfile(profile);
-var driver = new webdriver.Builder();
+  );
+  
+  // disable Firefox's built-in PDF viewer
+  profile.setPreference("pdfjs.disabled", true);
+  var options = new firefox.Options().setProfile(profile);
+  var driver = new webdriver.Builder();
 
 //Array of codes
 var marsha = 'SJCCA'
@@ -66,26 +69,71 @@ test.describe("GPO Clicker", function() {
           .setSize(1280, 720);
       });
 
-      test.it("GPO interaction", async function(done, err) {
+      test.it("GPO interaction", function(done, err) {
         // console.log(s);
         this.timeout(timeOut);
         driver.get(gpourl)
-.then(_ => driver.wait(until.elementLocated(By.css("#uniqName_1_0-mode-above-property"))), 20000)
-.then(_ => console.log('1'))
-.then(_ => driver.sleep(5000))
+.then(_ => driver.wait(until.elementLocated(By.css("#uniqName_1_0-mode-above-property"))), 10000)
+.then(_ => driver.sleep(1000))
 .then(_ => driver.findElement(By.css("#uniqName_1_0-mode-above-property")).click(), 10000)
-.then(_ => console.log('2'))
+.then(_ => driver.sleep(1000))
+.then(_ => driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onSubmit')]")).click(), 10000)
+.then(_ => driver.sleep(1000))
+.then(_ => driver.wait(until.elementLocated(By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onPricingClick')]"))), 10000)
+.then(_ => driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onPricingClick')]")).click(), 10000)
+.then(_ => driver.sleep(1000))
+.then(_ => driver.findElement(By.xpath("//a[@data-child-id='testPrice']")).click(), 10000)
 .then(_ => driver.sleep(5000))
-.then(_ => driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onSubmit')]")).click(), 1000)
-.then(_ => console.log('3'))
+.then(_ => driver.findElement(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]")).click(), 10000)
+.then(_ => driver.sleep(1000))
+.then(_ => driver.findElement(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]")).clear(), 10000)
+.then(_ => driver.findElement(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]")).sendKeys('2'), 10000)
+.then(_ => driver.findElement(By.xpath("//button[contains(.,'New')]")).click(), 10000)
+.then(_ => driver.sleep(1000))
+.then(_ => driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_propertyCode")).click(), 10000)
+.then(_ => driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_propertyCode")).sendKeys('SJCCA'), 10000)
+.then(_ => driver.sleep(1000))
+.then(_ => driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_pricingType")).click(), 10000)
+.then(_ => driver.sleep(1000))
+.then(_ => driver.findElement(By.xpath("//button[@type='submit'][contains(.,'Update')]")).click(), 10000)
 .then(_ => driver.sleep(5000))
 
-  
-driver.sleep(20000);
-        //PRICE link
 
-        // driver.findElement(By.css("heading > a")).click();
-        // //TEST PRICE Link
+
+//Select Dates -- DOUBLECLICK AINT WORKIN
+.then(_ => driver.findElement(By.xpath("//a[contains(@ddata-date, '2018-12-23')]")).doubleclick(), 10000)
+.then(_ => driver.sleep(5000))
+.then(_ => driver.findElement(By.xpath("//a[contains(@ddata-date, '2018-12-25')]")).doubleclick(), 10000)
+.then(_ => driver.sleep(5000))
+.then(_ => driver.findElement(By.xpath("//a[contains(@ddata-date, '2018-12-27')]")).doubleclick(), 10000)
+.then(_ => driver.sleep(5000))
+.then(_ => console.log('9 Date Picker'))
+.then(_ => driver.sleep(5000))
+//Add 20 Rooms
+.then(_ => driver.findElement(webdriver.By.name("rooms")).sendKeys('20'))
+.then(_ => driver.findElement(webdriver.By.name("rooms")).sendKeys('20'))
+.then(_ => console.log('10 Set rooms'))
+.then(_ => driver.sleep(5000))
+//Get Recommendations
+.then(_ => driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'testPrice')]")).click(), 10000)
+.then(_ => console.log('11 Click TestPrice'))
+.then(_ => driver.sleep(5000))
+//Export
+.then(_ => driver.findElement(By.xpath("//a[contains(@data-child-id, 'getRecommendationButtons')]")).click(), 10000)
+.then(_ => console.log('12 Click TestPrice'))
+.then(_ => driver.sleep(5000))
+//Confirm File
+.then(_ => driver.findElement(By.xpath("//a[contains(@data-child-id, 'testPrice')]")).click(), 10000)
+.then(_ => console.log('13 Click TestPrice'))
+.then(_ => driver.sleep(5000))
+//Close
+.then(_ => driver.findElement(By.xpath("//a[contains(@data-child-id, 'testPrice')]")).click(), 10000)
+.then(_ => console.log('14 Click TestPrice'))
+.then(_ => driver.sleep(5000))
+
+
+
+
         // driver.findElement(By.css("marriottSubMenuBar > a.marriottMenuItem")).click();
         // //LOS pull down
         // driver.findElement(By.id("marriottSubMenuBar > a.marriottMenuItem")).click();
