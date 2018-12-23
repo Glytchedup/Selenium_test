@@ -1,12 +1,8 @@
-
-
-
 //credentials in app-env
 var eid = process.env.EID;
 var password = process.env.PASSWORD;
 var url = process.env.URL;
 var gpourl = process.env.GPOURL;
-
 //Webdriver setup
 var assert = require("assert");
 var webdriver = require("selenium-webdriver"),
@@ -60,8 +56,9 @@ test.describe("GPO Clicker", function() {
 
   //Shop Loop 
   // marsha.forEach(s => {
-  test.describe("GPO Shop", function() {
-      test.before(function() {
+  test.describe("GpoShop", async function() {
+
+test.before(function() {
         this.timeout(timeOut);
         driver
           .manage()
@@ -69,66 +66,90 @@ test.describe("GPO Clicker", function() {
           .setSize(1280, 720);
       });
 
-      test.it("GPO interaction", function(done, err) {
-        // console.log(s);
+      test.it("PropertySelect", function(done, err) {
         this.timeout(timeOut);
         driver.get(gpourl)
-.then(_ => driver.wait(until.elementLocated(By.css("#uniqName_1_0-mode-above-property"))), 10000)
-.then(_ => driver.sleep(1000))
-.then(_ => driver.findElement(By.css("#uniqName_1_0-mode-above-property")).click(), 10000)
-.then(_ => driver.sleep(1000))
-.then(_ => driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onSubmit')]")).click(), 10000)
-.then(_ => driver.sleep(1000))
-.then(_ => driver.wait(until.elementLocated(By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onPricingClick')]"))), 10000)
-.then(_ => driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onPricingClick')]")).click(), 10000)
-.then(_ => driver.sleep(1000))
-.then(_ => driver.findElement(By.xpath("//a[@data-child-id='testPrice']")).click(), 10000)
-.then(_ => driver.sleep(5000))
-.then(_ => driver.findElement(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]")).click(), 10000)
-.then(_ => driver.sleep(1000))
-.then(_ => driver.findElement(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]")).clear(), 10000)
-.then(_ => driver.findElement(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]")).sendKeys('2'), 10000)
-.then(_ => driver.findElement(By.xpath("//button[contains(.,'New')]")).click(), 10000)
-.then(_ => driver.sleep(1000))
-.then(_ => driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_propertyCode")).click(), 10000)
-.then(_ => driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_propertyCode")).sendKeys('SJCCA'), 10000)
-.then(_ => driver.sleep(1000))
-.then(_ => driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_pricingType")).click(), 10000)
-.then(_ => driver.sleep(1000))
-.then(_ => driver.findElement(By.xpath("//button[@type='submit'][contains(.,'Update')]")).click(), 10000)
-.then(_ => driver.sleep(5000))
+        .then(_ => driver.manage().timeouts().pageLoadTimeout(10000));
+
+driver.sleep(1000);
+
+var above = By.css("#uniqName_1_0-mode-above-property")
+driver.wait(until.elementLocated(above))
+.then(_ => driver.findElement(above).click(), 10000);
+
+driver.sleep(1000);
+
+driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onSubmit')]")).click();
+
+var pricing = By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onPricingClick')]")
+
+driver.sleep(1000);
+
+driver.findElement(pricing).click();
+
+driver.sleep(1000);
+
+driver.findElement(By.xpath("//a[@data-child-id='testPrice']")).click()
+.then(_ => driver.sleep(3000));
+
+var los = driver.findElement(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]"));
+driver.wait(until.elementLocated(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]")), 10000)
+.then(_ => los.click());
+los.clear();
+los.sendKeys('2');
+
+driver.findElement(By.xpath("//button[contains(.,'New')]")).click();
+
+driver.sleep(1000);
+
+var pcode = driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_propertyCode"))
+pcode.click();
+pcode.sendKeys('SJCCA');
+
+driver.sleep(1000);
+
+driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_pricingType")).click();
+
+driver.sleep(1000);
+
+driver.findElement(By.xpath("//button[@type='submit'][contains(.,'Update')]")).click();
+
+driver.sleep(3000);
+
+//Click on End Date Pull-down
+var enddate = By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'dijit_form_DateTextBox_0')]")
+driver.wait(until.elementLocated(enddate), 10000)
+.then(_ => driver.findElement(enddate).click())
+.then(_ => driver.findElement(By.xpath("//span[@class='dijitCalendarDateLabel'][contains(@text,'5')]")).click())
 
 
+driver.sleep(10000);
+});
 
+      test.it("CalendarPicker", function(done, err) {
 //Select Dates -- DOUBLECLICK AINT WORKIN
-.then(_ => driver.findElement(By.xpath("//a[contains(@ddata-date, '2018-12-23')]")).doubleclick(), 10000)
+driver.sleep(5000).then(_ => driver.findElement(By.xpath("//table[@class='month'][(@ddata-date, '2018-12-23')]")).doubleclick(), 10000)
 .then(_ => driver.sleep(5000))
 .then(_ => driver.findElement(By.xpath("//a[contains(@ddata-date, '2018-12-25')]")).doubleclick(), 10000)
 .then(_ => driver.sleep(5000))
 .then(_ => driver.findElement(By.xpath("//a[contains(@ddata-date, '2018-12-27')]")).doubleclick(), 10000)
 .then(_ => driver.sleep(5000))
-.then(_ => console.log('9 Date Picker'))
 .then(_ => driver.sleep(5000))
 //Add 20 Rooms
 .then(_ => driver.findElement(webdriver.By.name("rooms")).sendKeys('20'))
 .then(_ => driver.findElement(webdriver.By.name("rooms")).sendKeys('20'))
-.then(_ => console.log('10 Set rooms'))
 .then(_ => driver.sleep(5000))
 //Get Recommendations
 .then(_ => driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'testPrice')]")).click(), 10000)
-.then(_ => console.log('11 Click TestPrice'))
 .then(_ => driver.sleep(5000))
 //Export
 .then(_ => driver.findElement(By.xpath("//a[contains(@data-child-id, 'getRecommendationButtons')]")).click(), 10000)
-.then(_ => console.log('12 Click TestPrice'))
 .then(_ => driver.sleep(5000))
 //Confirm File
 .then(_ => driver.findElement(By.xpath("//a[contains(@data-child-id, 'testPrice')]")).click(), 10000)
-.then(_ => console.log('13 Click TestPrice'))
 .then(_ => driver.sleep(5000))
 //Close
 .then(_ => driver.findElement(By.xpath("//a[contains(@data-child-id, 'testPrice')]")).click(), 10000)
-.then(_ => console.log('14 Click TestPrice'))
 .then(_ => driver.sleep(5000))
 
 
