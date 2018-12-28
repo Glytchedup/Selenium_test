@@ -3,13 +3,14 @@ var eid = process.env.EID;
 var password = process.env.PASSWORD;
 var url = process.env.URL;
 var gpourl = process.env.GPOURL;
+
 //Webdriver setup
 var assert = require("assert");
 var webdriver = require("selenium-webdriver"),
-           By = webdriver.By,
-            until = webdriver.until;
+  By = webdriver.By,
+  until = webdriver.until;
 var test = require("selenium-webdriver/testing");
-const timeOut = 90000;
+const timeOut = 900000;
 var extract;
 var firefox = require("selenium-webdriver/firefox");
 var path = require("path");
@@ -22,15 +23,15 @@ profile.setPreference("browser.download.dir", myDownloadFolder);
 profile.setPreference(
   "browser.helperApps.neverAsk.saveToDisk",
   "application/vnd.ms-excel"
-  );
-  
-  // disable Firefox's built-in PDF viewer
-  profile.setPreference("pdfjs.disabled", true);
-  var options = new firefox.Options().setProfile(profile);
-  var driver = new webdriver.Builder();
+);
+
+// disable Firefox's built-in PDF viewer
+profile.setPreference("pdfjs.disabled", true);
+var options = new firefox.Options().setProfile(profile);
+var driver = new webdriver.Builder();
 
 //Array of codes
-var marsha = 'SJCCA'
+var marsha = ["SJCCA", "SFOSB", "FATCH", "FATRI", "SFOFC"];
 
 // //Build Webdriver with Firefox profile setup
 test.describe("GPO Clicker", function() {
@@ -54,150 +55,274 @@ test.describe("GPO Clicker", function() {
     driver.findElement(webdriver.By.css("button.btn.btn-block")).click();
   });
 
-  //Shop Loop 
-  // marsha.forEach(s => {
+  //Shop Loop
   test.describe("GpoShop", async function() {
+    test.before(function() {
+      this.timeout(timeOut);
+      driver
+        .manage()
+        .window()
+        .setSize(1280, 720);
+    });
 
-test.before(function() {
-        this.timeout(timeOut);
+    test.it("PropertyShop", function(done, err) {
+      this.timeout(timeOut);
+      driver.get(gpourl).then(_ =>
         driver
           .manage()
-          .window()
-          .setSize(1280, 720);
-      });
+          .timeouts()
+          .pageLoadTimeout(10000)
+      );
 
-      test.it("PropertySelect", function(done, err) {
-        this.timeout(timeOut);
-        driver.get(gpourl)
-        .then(_ => driver.manage().timeouts().pageLoadTimeout(10000));
+      function handleFailure(err) {
+        console.log("Something went wrong", err.stack);
+        after();
+      }
 
+      driver.sleep(2000);
+
+      var above = By.css("#uniqName_1_0-mode-above-property");
+      driver
+        .wait(until.elementLocated(above))
+        .then(_ => driver.findElement(above).click(), 10000);
+
+      driver.sleep(1000);
+
+      driver
+        .findElement(
+          By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onSubmit')]")
+        )
+        .click();
+
+      driver.sleep(1000);
+
+      var pricing = By.xpath(
+        "//a[contains(@data-dojo-attach-event, 'click:_onPricingClick')]"
+      );
+
+      driver.sleep(1000);
+
+      driver.findElement(pricing).click();
+
+      driver.sleep(1000);
+
+      driver
+        .findElement(By.xpath("//a[@data-child-id='testPrice']"))
+        .click()
+        .then(_ => driver.sleep(3000));
+
+      var los = driver.findElement(
+        By.xpath(
+          "//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]"
+        )
+      );
+      driver
+        .wait(
+          until.elementLocated(
+            By.xpath(
+              "//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]"
+            )
+          ),
+          10000
+        )
+        .then(_ => los.click());
+      los.clear();
+      los.sendKeys("2");
+
+      marsha.forEach(s => {
+        driver.findElement(By.xpath("//button[contains(.,'New')]")).click();
+
+        driver.sleep(1000);
+
+        var pcode = driver.findElement(
+          By.id("dijit__WidgetsInTemplateMixin_1_propertyCode")
+        );
+        pcode.click();
+        pcode.sendKeys(s);
+
+        driver.sleep(1000);
+
+        driver
+          .findElement(
+            By.xpath("//div[@id='widget_uniqName_1_2_arrivalDateEnd']/div")
+          )
+          .click()
+          .then(_ =>
+            driver
+              .findElement(
+                By.xpath(
+                  "//table[@id='uniqName_1_2_arrivalDateEnd_popup']/thead/tr[2]/th[3]/span"
+                )
+              )
+              .click()
+          )
+          .then(_ =>
+            driver
+              .findElement(
+                By.xpath(
+                  "//table[@id='uniqName_1_2_arrivalDateEnd_popup']/tbody/tr[6]/td[7]/span"
+                )
+              )
+              .click()
+          )
+          .then(_ =>
+            driver
+              .findElement(
+                By.xpath("//button[@type='submit'][contains(.,'Update')]")
+              )
+              .click()
+          );
+
+        //Scroll to bottom
+        driver.sleep(2000);
+        driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+        driver.sleep(2000);
+
+        // var elem = driver.findElement(By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[1]//td[3]"));
+        // driver.actions()
+        //       .doubleClick(elem)
+        //       .perform();
+        // elem.getAttribute("class").then(function(selected) {
+        // 	assert.equal("selected");
+        // })
+        // driver.actions().doubleClick(tues).perform()
+
+        var rooms = driver.findElement(By.xpath("(//input[@name='rooms'])[1]"));
+        driver
+          .wait(
+            until.elementLocated(By.xpath("(//input[@name='rooms'])[1]")),
+            5000
+          )
+          .then(_ => rooms.click())
+          .then(_ => rooms.clear())
+          .then(_ => rooms.sendKeys("20"));
+
+        var rooms2 = driver.findElement(
+          By.xpath("(//input[@name='rooms'])[2]")
+        );
+        driver
+          .wait(
+            until.elementLocated(By.xpath("(//input[@name='rooms'])[2]")),
+            5000
+          )
+          .then(_ => rooms2.click())
+          .then(_ => rooms2.clear())
+          .then(_ => rooms2.sendKeys("20"))
+          .then(_ => driver.sleep(1000));
+       
+          // var fri = driver.findElement(By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[1]//td[6]"));
+          // var sun = driver.findElement(By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[2]//td[1]"));
+          // var tues2 = driver.findElement(By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[2]//td[3]"));
+   
+          //manually selecting dates
+        var el = driver.findElement(
+          By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[1]//td[3]"));
+
+el.click();
 driver.sleep(1000);
+el.click();
 
-var above = By.css("#uniqName_1_0-mode-above-property")
-driver.wait(until.elementLocated(above))
-.then(_ => driver.findElement(above).click(), 10000);
+        // driver.actions()
+        // .doubleClick(el)
+        // .perform();
+        
 
-driver.sleep(1000);
-
-driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onSubmit')]")).click();
-
-var pricing = By.xpath("//a[contains(@data-dojo-attach-event, 'click:_onPricingClick')]")
-
-driver.sleep(1000);
-
-driver.findElement(pricing).click();
-
-driver.sleep(1000);
-
-driver.findElement(By.xpath("//a[@data-child-id='testPrice']")).click()
-.then(_ => driver.sleep(3000));
-
-var los = driver.findElement(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]"));
-driver.wait(until.elementLocated(By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'lengthOfStay')]")), 10000)
-.then(_ => los.click());
-los.clear();
-los.sendKeys('2');
-
-driver.findElement(By.xpath("//button[contains(.,'New')]")).click();
-
-driver.sleep(1000);
-
-var pcode = driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_propertyCode"))
-pcode.click();
-pcode.sendKeys('SJCCA');
-
-driver.sleep(1000);
-
-driver.findElement(By.id("dijit__WidgetsInTemplateMixin_1_pricingType")).click();
-
-driver.sleep(1000);
-
-driver.findElement(By.xpath("//button[@type='submit'][contains(.,'Update')]")).click();
-
-driver.sleep(3000);
-
-//Click on End Date Pull-down
-var enddate = By.xpath("//input[@class='dijitReset dijitInputInner'][contains(@id,'dijit_form_DateTextBox_0')]")
-driver.wait(until.elementLocated(enddate), 10000)
-.then(_ => driver.findElement(enddate).click())
-.then(_ => driver.findElement(By.xpath("//span[@class='dijitCalendarDateLabel'][contains(@text,'5')]")).click())
-
-
-driver.sleep(10000);
-});
-
-      test.it("CalendarPicker", function(done, err) {
-//Select Dates -- DOUBLECLICK AINT WORKIN
-driver.sleep(5000).then(_ => driver.findElement(By.xpath("//table[@class='month'][(@ddata-date, '2018-12-23')]")).doubleclick(), 10000)
-.then(_ => driver.sleep(5000))
-.then(_ => driver.findElement(By.xpath("//a[contains(@ddata-date, '2018-12-25')]")).doubleclick(), 10000)
-.then(_ => driver.sleep(5000))
-.then(_ => driver.findElement(By.xpath("//a[contains(@ddata-date, '2018-12-27')]")).doubleclick(), 10000)
-.then(_ => driver.sleep(5000))
-.then(_ => driver.sleep(5000))
-//Add 20 Rooms
-.then(_ => driver.findElement(webdriver.By.name("rooms")).sendKeys('20'))
-.then(_ => driver.findElement(webdriver.By.name("rooms")).sendKeys('20'))
-.then(_ => driver.sleep(5000))
-//Get Recommendations
-.then(_ => driver.findElement(By.xpath("//a[contains(@data-dojo-attach-event, 'testPrice')]")).click(), 10000)
-.then(_ => driver.sleep(5000))
-//Export
-.then(_ => driver.findElement(By.xpath("//a[contains(@data-child-id, 'getRecommendationButtons')]")).click(), 10000)
-.then(_ => driver.sleep(5000))
-//Confirm File
-.then(_ => driver.findElement(By.xpath("//a[contains(@data-child-id, 'testPrice')]")).click(), 10000)
-.then(_ => driver.sleep(5000))
-//Close
-.then(_ => driver.findElement(By.xpath("//a[contains(@data-child-id, 'testPrice')]")).click(), 10000)
-.then(_ => driver.sleep(5000))
+//Time to click dates
+        driver.sleep(15000);
 
 
 
+        driver
+          .findElement(
+            By.xpath(
+              "//button[@type='button'][contains(.,'Get Recommendation')]"
+            )
+          )
+          .then(_ =>
+            driver
+              .findElement(
+                By.xpath(
+                  "//button[@type='button'][contains(.,'Get Recommendation')]"
+                )
+              )
+              .click()
+          );
+        driver.sleep(6000);
+        //Ideally this would be wait until all 5 tests are "done" assert?
 
-        // driver.findElement(By.css("marriottSubMenuBar > a.marriottMenuItem")).click();
-        // //LOS pull down
-        // driver.findElement(By.id("marriottSubMenuBar > a.marriottMenuItem")).click();
-        // //NEW button
-        // driver.findElement(By.css("#dijit_form_Form_1 > button")).click();
+        driver
+          .findElement(By.xpath("(//input[@type='checkbox'])[7]"))
+          .click()
+          .then(_ =>
+            driver
+              .findElement(By.xpath("(//input[@type='checkbox'])[8]"))
+              .click()
+          )
+          .then(_ =>
+            driver
+              .findElement(By.xpath("(//input[@type='checkbox'])[9]"))
+              .click()
+          )
+          .then(_ =>
+            driver
+              .findElement(By.xpath("//span[@id='dijit_form_Button_5_label']"))
+              .click()
+          )
+          .then(_ => driver.sleep(2000))
+          .then(_ =>
+            driver
+              .findElement(By.xpath("//span[@id='dijit_form_Button_7_label']"))
+              .click()
+          )
+          .then(_ => driver.sleep(2000));
 
-        // driver.sleep(45000).then(function test() {
-        //   const testFolder = myDownloadFolder;
-        //   const fs = require("fs");
+        driver.sleep(3000).then(function test() {
+          const testFolder = myDownloadFolder;
+          const fs = require("fs");
 
-        //   //Checking for file in app downloads folder
-        //   fs.readdir(testFolder, (err, files) => {
-        //     files.forEach(file => {
-        //       if (file.indexOf(s) > -1) {
-        //         console.log(file + " was successfully pulled");
-        //         return done();
+          //Checking for file in app downloads folder
+          fs.readdir(testFolder, (err, files) => {
+            files.forEach(file => {
+              if (file.indexOf(s) > -1) {
+                console.log(file + " was successfully pulled");
+                return done();
 
-        //         // use those file and return it as a REST API
-        //       } else if (file.indexOf(s) >= 0) {
-        //         console.log("Going into Overtime");
-        //         driver.sleep(30000).then(function test() {
-        //           const testFolder = myDownloadFolder;
-        //           const fs = require("fs");
-        //           fs.readdir(testFolder, (err, files) => {
-        //             files.forEach(file => {
-        //               if (file.indexOf(s) > -1) {
-        //                 console.log(
-        //                   file + " successfully pulled after a delay"
-        //                 );
-        //                 return done();
-        //                 // use those file and return it as a REST API
-        //               } else if (file.indexOf(s) >= 0) {
-        //                 console.log("Extract failed for " + s);
-        //                 return done(err);
-        //               }
-        //             });
-        //           });
-        //         });
-        //       }
-        //     });
-        //   });
-        // });
+                // use those file and return it as a REST API
+              } else if (file.indexOf(s) >= 0) {
+                console.log("Going into Overtime");
+                driver.sleep(10000).then(function test() {
+                  const testFolder = myDownloadFolder;
+                  const fs = require("fs");
+                  fs.readdir(testFolder, (err, files) => {
+                    files.forEach(file => {
+                      if (file.indexOf(s) > -1) {
+                        console.log(
+                          file + " successfully pulled after a delay"
+                        );
+                        return done();
+                        // use those file and return it as a REST API
+                      } else if (file.indexOf(s) >= 0) {
+                        console.log("Extract failed for " + s);
+                        return done(err);
+                      }
+                    });
+                  });
+                });
+              }
+            });
+          });
+          //Scroll to bottom
+          driver.sleep(2000);
+          driver.executeScript(
+            "window.scrollTo(0, document.body.scrollHeight);"
+          );
+          driver.sleep(2000);
+          //Add check for downloaded file then click close
+          driver
+            .findElement(By.xpath("//span[@id='dijit_form_Button_8_label']"))
+            .click();
+        });
       });
     });
   });
-// });
+});

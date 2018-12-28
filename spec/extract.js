@@ -30,7 +30,7 @@ var options = new firefox.Options().setProfile(profile);
 var driver = new webdriver.Builder();
 
 //Array of codes
-var marsha = ["SJCCA", "SLCSR"];
+var marsha = ["SJCCA", "SLCSR", "BVUFI", "GEGFI", "SJCJS", "SJCJR", "SJCCC", "FSDSS", "SFOSB", "FATCH", "FATRI", "SFOFC"  ];
 
 //Build Webdriver with Firefox profile setup
 test.describe("Pull OYV2 Extracts", function() {
