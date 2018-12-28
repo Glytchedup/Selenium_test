@@ -62,7 +62,7 @@ test.describe("GPO Clicker", function() {
       driver
         .manage()
         .window()
-        .setSize(1280, 720);
+        .setSize(1360, 768);
     });
 
     test.it("PropertyShop", function(done, err) {
@@ -213,18 +213,33 @@ test.describe("GPO Clicker", function() {
           // var fri = driver.findElement(By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[1]//td[6]"));
           // var sun = driver.findElement(By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[2]//td[1]"));
           // var tues2 = driver.findElement(By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[2]//td[3]"));
-   
+   var script = 'let ele=document.evaluate("//div[@class=\'container\']//table[2]//tbody[1]//tr[1]//td[3]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;var clickEvent=document.createEvent("MouseEvents");clickEvent.initEvent("dblclick",!0,!0),ele.dispatchEvent(clickEvent);'
+
+          driver.executeScript(script).then(function(return_value) {
+            console.log('returned ', return_value)
+            });
+         driver.sleep(2000);
+         
           //manually selecting dates
-        var el = driver.findElement(
-          By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[1]//td[3]"));
+        // var el = driver.findElement(
+        //   By.xpath("//div[@class='container']//table[2]//tbody[1]//tr[1]//td[3]"));
+        //   el.click();
+        //   driver.sleep(50);
+        //   el.click();
 
-el.click();
-driver.sleep(1000);
-el.click();
 
-        // driver.actions()
-        // .doubleClick(el)
-        // .perform();
+          // let ele =document.evaluate("//div[@class='container']//table[2]//tbody[1]//tr[1]//td[3]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+          // var clickEvent = document.createEvent ('MouseEvents');
+          // clickEvent.initEvent ('dblclick', true, true);
+          // ele.dispatchEvent (clickEvent);
+                  // driver.actions()
+                  // .doubleClick(el)
+                  // .perform();
+
+// el.click();
+// driver.sleep(1000);
+// el.click();
         
 
 //Time to click dates
